@@ -20,9 +20,12 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('admin/home', 'HomeController@adminHome')->name('admin.home')->middleware('is_admin');
+Route::get('adminHome', 'HomeController@adminHome')->name('adminHome')->middleware('is_admin');
 
-//Route::get('adminHome', 'HomeController@adminHome')->name('adminHome')->middleware('is_admin');
-Route::get('userList', 'HomeController@userList')->name('userList')->middleware('is_admin');
 
-Route::get('userData', 'HomeController@getUsers')->name('userData');
+
+
+Route::get('userList', 'UserController@index')->name('userList');
+Route::get('userList/edit/{id}', 'UserController@edit');
+Route::post('userList/store', 'UserController@store')->name('userStore');
+Route::get('userList/delete/{id}', 'UserController@destroy');

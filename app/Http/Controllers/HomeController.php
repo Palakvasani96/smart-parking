@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use Yajra\DataTables\DataTables;
+
 
 class HomeController extends Controller
 {
@@ -24,19 +23,72 @@ class HomeController extends Controller
     {
         return view('userList');
     }
-    public function getUsers(Request $request)
+    
+    public function usersUpdate(Request $request, User $user,$id)
     {
-        if ($request->ajax()) 
-        {
-            $data = User::latest()->get();
-            return Datatables::of($data)
-                ->addIndexColumn()
-                ->addColumn('action', function($row){
-                    $actionBtn = '<a href="javascript:void(0)" class="edit btn btn-success btn-sm">Edit</a> <a href="javascript:void(0)" class="delete btn btn-danger btn-sm">Delete</a>';
-                    return $actionBtn;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
+        //User::find($id)->delete();
+        if($request->ajax())
+    	{
+    		if($request->action == 'edit')
+    		{
+    			$data = array(
+    				'name'	=>	$request->name,
+    				'email'		=>	$request->email,
+    				'is_admin'		=>	$request->is_admin
+    			);
+    			DB::table('user')
+    				->where('id', $request->id)
+    				->update($data);
+    		}    		
+    		return response()->json($request);
+    	}
+
+    }
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    public function store(Request $request)
+    {  
+        $userId = $request->user_id;
+        $user   =   User::updateOrCreate(['id' => $userId],
+                    ['name' => $request->name, 'email' => $request->email, 'is_admin' => $request->is_admin]);        
+        return Response::json($user);
+    }
+    
+    
+    
+    public function edit($id)
+    {   
+        $where = array('id' => $id);
+        $user  = User::where($where)->first();    
+        return Response::json($user);
+    }
+    
+    
+    
+    public function destroy($id)
+    {
+        $user = User::where('id',$id)->delete();    
+        return Response::json($user);
     }
 }
+
